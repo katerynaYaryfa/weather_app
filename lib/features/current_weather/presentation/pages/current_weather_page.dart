@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:weather_app/app_text_styles.dart';
 
-class CurrentWeatherScreen extends StatelessWidget {
-  const CurrentWeatherScreen({super.key});
+class CurrentWeatherPage extends StatelessWidget {
+  const CurrentWeatherPage({super.key});
 
   @override
   Widget build(BuildContext context) {
