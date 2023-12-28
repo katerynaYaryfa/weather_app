@@ -19,27 +19,29 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.blue.shade300,
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'CityName',
-              style: TextStyles.s30CWhite,
-            ),
-            Text(
-              '20°',
-              style: TextStyles.s50WBoldCWhite,
-            ),
-            Text(
-              'Weather description',
-              style: TextStyles.s16CWhite,
-            ),
-          ],
+    return Consumer<CurrentWeatherProvider>(builder: (context, provider, _) {
+      return Scaffold(
+        backgroundColor: Colors.blue.shade300,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                provider.cityName,
+                style: TextStyles.s30CWhite,
+              ),
+              Text(
+                '${provider.temperature}°',
+                style: TextStyles.s50WBoldCWhite,
+              ),
+              Text(
+                provider.weatherDescription,
+                style: TextStyles.s16CWhite,
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
