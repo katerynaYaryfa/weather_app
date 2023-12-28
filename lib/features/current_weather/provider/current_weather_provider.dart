@@ -12,6 +12,10 @@ class CurrentWeatherProvider extends ChangeNotifier {
 
   late double latitude;
   late double longitude;
+  late String cityName;
+  late String weatherDescription;
+  late int? temperature;
+  late int? condition;
 
   void getCurrentLocation() async {
     try {
@@ -33,10 +37,10 @@ class CurrentWeatherProvider extends ChangeNotifier {
   }
 
   void updateUI(WeatherModel? weatherData) {
-    final cityName = weatherData?.name;
-    final weatherDescription = weatherData?.weather?[0].description;
-    final temperature = weatherData?.main?.temp;
-    final condition = weatherData?.weather?[0].id;
+    cityName = weatherData?.name.toString() ?? '';
+    weatherDescription = weatherData?.weather?[0].description.toString() ?? '';
+    temperature = weatherData?.main?.temp?.toInt();
+    condition = weatherData?.weather?[0].id;
 
     notifyListeners();
   }
