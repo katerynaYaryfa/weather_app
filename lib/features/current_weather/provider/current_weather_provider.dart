@@ -29,7 +29,7 @@ class CurrentWeatherProvider extends ChangeNotifier {
   String? weatherIcon;
   String? mainIcon;
   Color? mainColor;
-  bool shimmer = true;
+  String? temperatureDescription;
 
   void getCurrentLocation() async {
     try {
@@ -67,14 +67,9 @@ class CurrentWeatherProvider extends ChangeNotifier {
     convertFromUnixToDateTime();
 
     weatherIcon = getWeatherIcon(condition);
-    // mainIcon = getMainIcon(1);
-    // mainColor = getMainColor(1);
-    shimmer = false;
-    print('weatherIcon: $weatherIcon');
 
-    print(
-        'tempMin: $tempMin, tempMax: $tempMax, pressure: $pressure, humidity: $humidity, windSpeed: $windSpeed, clouds: $clouds, sunrise: $sunriseUnix, sunset: $sunsetUnix');
     compareDateTime();
+    temperatureDescription = getTemperatureDescription(temperature ?? 0);
     notifyListeners();
   }
 
@@ -85,9 +80,6 @@ class CurrentWeatherProvider extends ChangeNotifier {
         DateTime.fromMillisecondsSinceEpoch(sunsetUnix! * 1000);
     sunriseFormatted = '${sunrise.hour}:${sunrise.minute}';
     sunsetFormatted = '${sunset.hour}:${sunset.minute}';
-    print('sunrise: $sunrise, sunset: $sunset');
-    print(
-        'sunriseFormatted: $sunriseFormatted, sunsetFormatted: $sunsetFormatted');
   }
 
   void compareDateTime() {
@@ -98,8 +90,6 @@ class CurrentWeatherProvider extends ChangeNotifier {
     final DateTime now = DateTime.now();
     final isAfterSunrise = now.isAfter(sunrise);
     final isBeforeSunset = now.isBefore(sunset);
-
-    print('sunrise: $sunrise, sunset: $sunset, now: $now');
 
     if (isAfterSunrise && isBeforeSunset) {
       mainIcon = getMainIcon(1);
@@ -128,7 +118,6 @@ class CurrentWeatherProvider extends ChangeNotifier {
         return '☀️';
       case == 2:
         return '🌙';
-
       default:
         return '';
     }
@@ -150,6 +139,23 @@ class CurrentWeatherProvider extends ChangeNotifier {
         return '☀️';
       case <= 804:
         return '☁️';
+      default:
+        return '';
+    }
+  }
+
+  String getTemperatureDescription(int temperature) {
+    switch (temperature) {
+      case < 0:
+        return "It's cold outside. Don’t forget your gloves.";
+      case < 10:
+        return "It's quite cold. Wear puffer jacket.";
+      case < 20:
+        return "It's chilly. A light jacket should do.";
+      case < 30:
+        return "It's warm. Short sleeves are perfect.";
+      case > 30:
+        return "It's very hot! Stay cool and hydrated.";
       default:
         return '';
     }

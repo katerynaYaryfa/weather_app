@@ -6,6 +6,11 @@ abstract class TextStyles {
     color: Colors.white,
   );
 
+  static const TextStyle s24CWhite = TextStyle(
+    fontSize: 24,
+    color: Colors.white,
+  );
+
   static const TextStyle s30CWhite = TextStyle(
     fontSize: 30,
     color: Colors.white,
