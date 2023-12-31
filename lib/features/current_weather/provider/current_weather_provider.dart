@@ -67,13 +67,14 @@ class CurrentWeatherProvider extends ChangeNotifier {
     convertFromUnixToDateTime();
 
     weatherIcon = getWeatherIcon(condition);
-    mainIcon = getMainIcon(1);
-    mainColor = getMainColor(1);
+    // mainIcon = getMainIcon(1);
+    // mainColor = getMainColor(1);
     shimmer = false;
     print('weatherIcon: $weatherIcon');
 
     print(
         'tempMin: $tempMin, tempMax: $tempMax, pressure: $pressure, humidity: $humidity, windSpeed: $windSpeed, clouds: $clouds, sunrise: $sunriseUnix, sunset: $sunsetUnix');
+    compareDateTime();
     notifyListeners();
   }
 
@@ -87,6 +88,26 @@ class CurrentWeatherProvider extends ChangeNotifier {
     print('sunrise: $sunrise, sunset: $sunset');
     print(
         'sunriseFormatted: $sunriseFormatted, sunsetFormatted: $sunsetFormatted');
+  }
+
+  void compareDateTime() {
+    final DateTime sunrise =
+        DateTime.fromMillisecondsSinceEpoch(sunriseUnix! * 1000);
+    final DateTime sunset =
+        DateTime.fromMillisecondsSinceEpoch(sunsetUnix! * 1000);
+    final DateTime now = DateTime.now();
+    final isAfterSunrise = now.isAfter(sunrise);
+    final isBeforeSunset = now.isBefore(sunset);
+
+    print('sunrise: $sunrise, sunset: $sunset, now: $now');
+
+    if (isAfterSunrise && isBeforeSunset) {
+      mainIcon = getMainIcon(1);
+      mainColor = getMainColor(1);
+    } else {
+      mainIcon = getMainIcon(2);
+      mainColor = getMainColor(2);
+    }
   }
 
   Color getMainColor(int number) {
