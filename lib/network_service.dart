@@ -12,6 +12,9 @@ class NetworkService {
     if (response.statusCode == 200) {
       String data = response.body;
       return WeatherModel.fromJson(jsonDecode(data));
+    } else if (response.statusCode >= 400) {
+      final test = jsonDecode(response.body) as Map<String, dynamic>;
+      throw Exception(test['message']);
     }
 
     return null;
