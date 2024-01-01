@@ -4,6 +4,7 @@ import 'package:weather_app/app_text_styles.dart';
 import 'package:weather_app/common/widgets/custom_animated_swithcer.dart';
 import 'package:weather_app/features/current_weather/presentation/widgets/current_weather_page_skeleton.dart';
 import 'package:weather_app/features/current_weather/provider/current_weather_provider.dart';
+import 'package:weather_app/features/find_city/presentation/screens/search_by_city_name.dart';
 import 'package:weather_app/features/weather_details/presentation/pages/weather_details_page.dart';
 
 class CurrentWeatherPage extends StatefulWidget {
@@ -27,9 +28,8 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
     final child = provider.cityName == null
         ? const CurrentWeatherPageSkeleton()
         : Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(height: 50),
+              const SizedBox(height: 100),
               Text(
                 provider.cityName ?? '',
                 style: TextStyles.s30CWhite,
@@ -63,6 +63,28 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
           );
 
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            context.read<CurrentWeatherProvider>().getCurrentLocation();
+          },
+          icon: const Icon(Icons.location_on),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SearchByCityPage(),
+                  ));
+            },
+            icon: const Icon(Icons.search),
+          ),
+        ],
+        backgroundColor: provider.mainColor ?? Colors.blue.shade300,
+        elevation: 0,
+      ),
       backgroundColor: provider.mainColor ?? Colors.blue.shade300,
       body: Center(
         child: CustomAnimatedSwitcher(

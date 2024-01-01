@@ -12,60 +12,66 @@ class WeatherDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<CurrentWeatherProvider>(builder: (context, provider, _) {
-      return Scaffold(
-        appBar: AppBar(
-          elevation: 0.0,
-          backgroundColor: provider.mainColor,
-          title: Text(provider.cityName ?? '', style: TextStyles.s24CWhite),
+    final provider = context.watch<CurrentWeatherProvider>();
+
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
+        elevation: 0.0,
         backgroundColor: provider.mainColor,
-        body: ListView(
-          children: [
-            TemperatureDetailsWidget(
-              title:
-                  't° max ↑ ${provider.tempMax}°, min ↓ ${provider.tempMin}°',
-              description: '${provider.temperatureDescription}',
-              iconText: SvgIcons.temperature,
-            ),
-            Row(
-              children: [
-                WeatherDetailsWidget(
-                  iconText: SvgIcons.humidity,
-                  title: 'Humidity',
-                  value: '${provider.humidity}%',
-                ),
-                WeatherDetailsWidget(
-                  iconText: SvgIcons.pressure,
-                  title: 'Pressure',
-                  value: '${provider.pressure} hPa',
-                ),
-              ],
-            ),
-            SunriseWidget(
-              title: 'Sunrise, Sunset',
-              timeText:
-                  '${provider.sunriseFormatted}   ${provider.sunsetFormatted}',
-              leftIconText: SvgIcons.sunrise,
-              rightIconText: SvgIcons.sunset,
-            ),
-            Row(
-              children: [
-                WeatherDetailsWidget(
-                  iconText: SvgIcons.cloud,
-                  title: 'Cloud coverage',
-                  value: '${provider.clouds}%',
-                ),
-                WeatherDetailsWidget(
-                  iconText: SvgIcons.wind,
-                  title: 'Wind',
-                  value: '${provider.windSpeed} M/S',
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
-    });
+        title: Text(provider.cityName ?? '', style: TextStyles.s22CWhite),
+      ),
+      backgroundColor: provider.mainColor,
+      body: Column(
+        children: [
+          TemperatureDetailsWidget(
+            title: 't° max ↑ ${provider.tempMax}°, min ↓ ${provider.tempMin}°',
+            description: '${provider.temperatureDescription}',
+            iconText: SvgIcons.temperature,
+          ),
+          Row(
+            children: [
+              WeatherDetailsWidget(
+                iconText: SvgIcons.humidity,
+                title: 'Humidity',
+                value: '${provider.humidity}%',
+              ),
+              WeatherDetailsWidget(
+                iconText: SvgIcons.pressure,
+                title: 'Pressure',
+                value: '${provider.pressure} hPa',
+              ),
+            ],
+          ),
+          SunriseWidget(
+            title: 'Sunrise, Sunset',
+            timeText:
+                '${provider.sunriseFormatted}   ${provider.sunsetFormatted}',
+            leftIconText: SvgIcons.sunrise,
+            rightIconText: SvgIcons.sunset,
+          ),
+          Row(
+            children: [
+              WeatherDetailsWidget(
+                iconText: SvgIcons.cloud,
+                title: 'Cloud coverage',
+                value: '${provider.clouds}%',
+              ),
+              WeatherDetailsWidget(
+                iconText: SvgIcons.wind,
+                title: 'Wind',
+                value: '${provider.windSpeed} M/S',
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+        ],
+      ),
+    );
   }
 }
