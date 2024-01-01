@@ -6,8 +6,8 @@ abstract class TextStyles {
     color: Colors.white,
   );
 
-  static const TextStyle s24CWhite = TextStyle(
-    fontSize: 24,
+  static const TextStyle s22CWhite = TextStyle(
+    fontSize: 22,
     color: Colors.white,
   );
 

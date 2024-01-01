@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart';
 import 'package:weather_app/core/extensions/string_extensions.dart';
+import 'package:weather_app/core/network/network_exception.dart';
 import 'package:weather_app/features/current_weather/repositories/current_weather_repository.dart';
 import 'package:weather_app/keys.dart';
 import 'package:weather_app/weather_model.dart';
@@ -33,6 +34,48 @@ class CurrentWeatherProvider extends ChangeNotifier {
   Color? mainColor;
   String? temperatureDescription;
 
+  String? searchCityName;
+
+  void updateSearchCityName(String value) {
+    searchCityName = value;
+    notifyListeners();
+  }
+
+  void getWeatherByCityName({
+    required String cityName,
+    required VoidCallback onSuccess,
+  }) async {
+    try {
+      final response = await _repository.getLocation(cityName);
+      latitude = response?.lat;
+      longitude = response?.lon;
+
+      final weatherData =
+          await _repository.getData(latitude ?? 0, longitude ?? 0);
+
+      updateUI(weatherData);
+      onSuccess();
+    } catch (error) {
+      if (error is ClientException) {
+        Keys.scaffoldMessengerKey.currentState!.showSnackBar(
+          const SnackBar(
+            content: Text('No Internet Connection'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else if (error is NetworkException) {
+        Keys.scaffoldMessengerKey.currentState!.showSnackBar(
+          SnackBar(
+            content: Text(error.message),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+
+    notifyListeners();
+  }
+
   void getCurrentLocation() async {
     try {
       await Geolocator.requestPermission();
@@ -54,10 +97,10 @@ class CurrentWeatherProvider extends ChangeNotifier {
             backgroundColor: Colors.red,
           ),
         );
-      } else {
+      } else if (error is NetworkException) {
         Keys.scaffoldMessengerKey.currentState!.showSnackBar(
           SnackBar(
-            content: Text(error.toString()),
+            content: Text(error.message),
             backgroundColor: Colors.red,
           ),
         );

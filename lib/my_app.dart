@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:weather_app/common/styles/skeleton_theme_provider.dart';
+import 'package:weather_app/core/network/network_service.dart';
 import 'package:weather_app/features/current_weather/presentation/pages/current_weather_page.dart';
 import 'package:weather_app/features/current_weather/provider/current_weather_provider.dart';
 import 'package:weather_app/features/current_weather/repositories/current_weather_repository.dart';
 import 'package:weather_app/keys.dart';
-import 'package:weather_app/network_service.dart';
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});

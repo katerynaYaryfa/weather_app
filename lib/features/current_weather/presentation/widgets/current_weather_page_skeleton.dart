@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:skeletons/skeletons.dart';
-import 'package:weather_app/features/current_weather/provider/current_weather_provider.dart';
 
 class CurrentWeatherPageSkeleton extends StatelessWidget {
   const CurrentWeatherPageSkeleton({super.key});
@@ -9,9 +7,8 @@ class CurrentWeatherPageSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const SizedBox(height: 50),
+        const SizedBox(height: 100),
         SkeletonAvatar(
           style: SkeletonAvatarStyle(
             width: 250,
@@ -52,15 +49,6 @@ class CurrentWeatherPageSkeleton extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        TextButton(
-          onPressed: () async {
-            context.read<CurrentWeatherProvider>().getCurrentLocation();
-          },
-          child: Text(
-            'Try again',
-            style: TextStyle(fontSize: 18, color: Colors.blue.shade50),
-          ),
-        ),
       ],
     );
   }
