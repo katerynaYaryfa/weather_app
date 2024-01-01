@@ -5,15 +5,15 @@ class SunriseWidget extends StatelessWidget {
   const SunriseWidget({
     super.key,
     required this.title,
-    required this.timeText,
-    required this.leftIconText,
-    required this.rightIconText,
+    required this.time,
+    required this.leftIcon,
+    required this.rightIcon,
   });
 
   final String title;
-  final String timeText;
-  final String leftIconText;
-  final String rightIconText;
+  final String time;
+  final String leftIcon;
+  final String rightIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class SunriseWidget extends StatelessWidget {
             ),
           ],
           borderRadius: BorderRadius.circular(16.0),
-          color: Colors.blue.shade100,
+          color: Colors.blue.shade100.withOpacity(0.6),
         ),
         child: Row(
           children: [
@@ -39,8 +39,8 @@ class SunriseWidget extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: SvgPicture.asset(
-                leftIconText,
-                color: Colors.blue.shade400,
+                leftIcon,
+                color: Colors.blue.shade600,
                 height: 64,
                 width: 64,
               ),
@@ -59,13 +59,13 @@ class SunriseWidget extends StatelessWidget {
                         color: Colors.blue.shade800),
                   ),
                   const SizedBox(height: 6),
-                  Divider(color: Colors.blue.shade400, thickness: 2),
+                  Divider(color: Colors.blue.shade500, thickness: 2),
                   const SizedBox(height: 6),
                   Text(
-                    timeText,
+                    time,
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.blue.shade700,
+                      color: Colors.blue.shade800,
                     ),
                   ),
                 ],
@@ -74,8 +74,8 @@ class SunriseWidget extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: SvgPicture.asset(
-                rightIconText,
-                color: Colors.blue.shade400,
+                rightIcon,
+                color: Colors.blue.shade600,
                 height: 64,
                 width: 64,
               ),

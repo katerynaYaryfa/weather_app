@@ -1,59 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart';
+import 'package:weather_app/common/keys/keys.dart';
 import 'package:weather_app/core/extensions/string_extensions.dart';
 import 'package:weather_app/core/network/network_exception.dart';
+import 'package:weather_app/core/services/geolocator_service.dart';
+import 'package:weather_app/features/current_weather/models/weather_model.dart';
+import 'package:weather_app/features/current_weather/provider/current_weather_state.dart';
 import 'package:weather_app/features/current_weather/repositories/current_weather_repository.dart';
-import 'package:weather_app/keys.dart';
-import 'package:weather_app/weather_model.dart';
 
 class CurrentWeatherProvider extends ChangeNotifier {
   CurrentWeatherProvider({
     required ICurrentWeatherRepository repository,
-  }) : _repository = repository {}
+    required GeoLocatorService geoLocatorService,
+  })  : _repository = repository,
+        _geoLocatorService = geoLocatorService;
 
   final ICurrentWeatherRepository _repository;
+  final GeoLocatorService _geoLocatorService;
 
-  double? latitude;
-  double? longitude;
-  String? cityName;
-  String? weatherDescription;
-  int? temperature;
-  int? tempMin;
-  int? tempMax;
-  int? pressure;
-  int? humidity;
-  int? windSpeed;
-  int? clouds;
-  int? sunriseUnix;
-  int? sunsetUnix;
-  String? sunriseFormatted;
-  String? sunsetFormatted;
-  String? weatherIcon;
-  String? mainIcon;
-  Color? mainColor;
-  String? temperatureDescription;
+  CurrentWeatherState state = CurrentWeatherState();
 
-  String? searchCityName;
-
-  void updateSearchCityName(String value) {
-    searchCityName = value;
-    notifyListeners();
-  }
-
-  void getWeatherByCityName({
+  Future<void> getWeatherByCityName({
     required String cityName,
     required VoidCallback onSuccess,
   }) async {
     try {
-      final response = await _repository.getLocation(cityName);
-      latitude = response?.lat;
-      longitude = response?.lon;
+      final location = await _repository.getLocation(cityName: cityName);
+      final weatherModel = await _repository.getWeather(
+        latitude: location?.latitude ?? 0,
+        longitude: location?.longitude ?? 0,
+      );
 
-      final weatherData =
-          await _repository.getData(latitude ?? 0, longitude ?? 0);
-
-      updateUI(weatherData);
+      _updateUI(weatherModel);
       onSuccess();
     } catch (error) {
       if (error is ClientException) {
@@ -76,19 +54,17 @@ class CurrentWeatherProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void getCurrentLocation() async {
+  Future<void> getWeather() async {
     try {
-      await Geolocator.requestPermission();
-      Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.low,
+      await _geoLocatorService.requestPermission();
+      final position = await _geoLocatorService.getCurrentPosition();
+
+      final weatherModel = await _repository.getWeather(
+        latitude: position.latitude,
+        longitude: position.longitude,
       );
 
-      latitude = position.latitude;
-      longitude = position.longitude;
-
-      final response = await _repository.getData(latitude ?? 0, longitude ?? 0);
-
-      updateUI(response);
+      _updateUI(weatherModel);
     } catch (error) {
       if (error is ClientException) {
         Keys.scaffoldMessengerKey.currentState!.showSnackBar(
@@ -110,80 +86,107 @@ class CurrentWeatherProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateUI(WeatherModel? weatherData) {
-    cityName = weatherData?.name.toString() ?? '';
-    weatherDescription =
-        weatherData?.weather?[0].description.toString().capitalize() ?? '';
-    temperature = weatherData?.main?.temp?.toInt();
-    final condition = weatherData?.weather?[0].id ?? 0;
-    tempMin = weatherData?.main?.tempMin?.toInt();
-    tempMax = weatherData?.main?.tempMax?.toInt();
-    pressure = weatherData?.main?.pressure?.toInt();
-    humidity = weatherData?.main?.humidity?.toInt();
-    windSpeed = weatherData?.wind?.speed?.toInt();
-    clouds = weatherData?.clouds?.all?.toInt();
-    sunriseUnix = weatherData?.sys?.sunrise?.toInt();
-    sunsetUnix = weatherData?.sys?.sunset?.toInt();
-    convertFromUnixToDateTime();
-
-    weatherIcon = getWeatherIcon(condition);
-
-    compareDateTime();
-    temperatureDescription = getTemperatureDescription(temperature ?? 0);
+  void updateSearchCityName(String value) {
+    state = state.copyWith(searchCityName: value);
     notifyListeners();
   }
 
-  void convertFromUnixToDateTime() {
-    final DateTime sunrise =
-        DateTime.fromMillisecondsSinceEpoch(sunriseUnix! * 1000);
-    final DateTime sunset =
-        DateTime.fromMillisecondsSinceEpoch(sunsetUnix! * 1000);
-    sunriseFormatted = '${sunrise.hour}:${sunrise.minute}';
-    sunsetFormatted = '${sunset.hour}:${sunset.minute}';
+  // This method convert WeatherModel to CurrentWeatherState
+  void _updateUI(WeatherModel? weatherModel) {
+    final condition = weatherModel?.weather?[0].id ?? 0;
+
+    state = state.copyWith(
+      cityName: weatherModel?.name.toString() ?? '',
+      weatherDescription:
+          weatherModel?.weather?[0].description.toString().capitalize() ?? '',
+      temperature: weatherModel?.main?.temp?.toInt() ?? 0,
+      weatherIcon: _getWeatherIcon(condition),
+      tempMin: weatherModel?.main?.tempMin?.toInt() ?? 0,
+      tempMax: weatherModel?.main?.tempMax?.toInt() ?? 0,
+      pressure: weatherModel?.main?.pressure?.toInt() ?? 0,
+      humidity: weatherModel?.main?.humidity?.toInt() ?? 0,
+      windSpeed: weatherModel?.wind?.speed?.toInt() ?? 0,
+      clouds: weatherModel?.clouds?.all?.toInt() ?? 0,
+      temperatureDescription: _getTemperatureDescription(
+        weatherModel?.main?.temp?.toInt() ?? 0,
+      ),
+    );
+    _convertFromUnixToDateTime(
+      sunriseUnix: weatherModel?.sys?.sunrise?.toInt(),
+      sunsetUnix: weatherModel?.sys?.sunset?.toInt(),
+    );
+    _compareDateTime(
+      sunriseUnix: weatherModel?.sys?.sunrise?.toInt(),
+      sunsetUnix: weatherModel?.sys?.sunset?.toInt(),
+    );
+
+    notifyListeners();
   }
 
-  void compareDateTime() {
+  void _convertFromUnixToDateTime({
+    int? sunriseUnix,
+    int? sunsetUnix,
+  }) {
     final DateTime sunrise =
-        DateTime.fromMillisecondsSinceEpoch(sunriseUnix! * 1000);
+        DateTime.fromMillisecondsSinceEpoch((sunriseUnix ?? 0) * 1000);
     final DateTime sunset =
-        DateTime.fromMillisecondsSinceEpoch(sunsetUnix! * 1000);
-    final DateTime now = DateTime.now();
+        DateTime.fromMillisecondsSinceEpoch((sunsetUnix ?? 0) * 1000);
+
+    state = state.copyWith(
+      sunriseFormatted: '${sunrise.hour}:${sunrise.minute}',
+      sunsetFormatted: '${sunset.hour}:${sunset.minute}',
+    );
+    notifyListeners();
+  }
+
+  void _compareDateTime({
+    int? sunriseUnix,
+    int? sunsetUnix,
+  }) {
+    final sunrise =
+        DateTime.fromMillisecondsSinceEpoch((sunriseUnix ?? 0) * 1000);
+    final sunset =
+        DateTime.fromMillisecondsSinceEpoch((sunsetUnix ?? 0) * 1000);
+    final now = DateTime.now();
     final isAfterSunrise = now.isAfter(sunrise);
     final isBeforeSunset = now.isBefore(sunset);
 
     if (isAfterSunrise && isBeforeSunset) {
-      mainIcon = getMainIcon(1);
-      mainColor = getMainColor(1);
+      state = state.copyWith(
+        mainImage: _getMainImage(1),
+        backgroundImage: _getBackgroundImage(1),
+      );
     } else {
-      mainIcon = getMainIcon(2);
-      mainColor = getMainColor(2);
+      state = state.copyWith(
+        mainImage: _getMainImage(2),
+        backgroundImage: _getBackgroundImage(2),
+      );
     }
   }
 
-  Color getMainColor(int number) {
+  String _getBackgroundImage(int number) {
     switch (number) {
       case == 1:
-        return Colors.blue.shade300;
+        return 'images/day_background.jpg';
       case == 2:
-        return Colors.indigo;
-
+        return 'images/night_background.jpg';
       default:
-        return Colors.blue.shade300;
+        return 'images/day_background.jpg';
     }
   }
 
-  String getMainIcon(int number) {
+  String _getMainImage(int number) {
     switch (number) {
       case == 1:
-        return '☀️';
+        return 'images/day_house.png';
       case == 2:
-        return '🌙';
+        return 'images/night_house.png';
       default:
-        return '';
+        return 'images/day_house.png';
     }
   }
 
-  String getWeatherIcon(int condition) {
+  String _getWeatherIcon(int condition) {
     switch (condition) {
       case < 300:
         return '🌩';
@@ -204,7 +207,7 @@ class CurrentWeatherProvider extends ChangeNotifier {
     }
   }
 
-  String getTemperatureDescription(int temperature) {
+  String _getTemperatureDescription(int temperature) {
     switch (temperature) {
       case < 0:
         return "It's cold outside. Don’t forget your gloves.";
