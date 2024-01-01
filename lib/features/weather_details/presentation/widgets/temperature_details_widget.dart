@@ -6,12 +6,12 @@ class TemperatureDetailsWidget extends StatelessWidget {
     super.key,
     required this.title,
     required this.description,
-    required this.iconText,
+    required this.icon,
   });
 
   final String title;
   final String description;
-  final String iconText;
+  final String icon;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class TemperatureDetailsWidget extends StatelessWidget {
             ),
           ],
           borderRadius: BorderRadius.circular(16.0),
-          color: Colors.blue.shade100,
+          color: Colors.blue.shade100.withOpacity(0.6),
         ),
         child: Row(
           children: [
@@ -37,8 +37,8 @@ class TemperatureDetailsWidget extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: SvgPicture.asset(
-                iconText,
-                color: Colors.blue.shade400,
+                icon,
+                color: Colors.blue.shade600,
                 height: 64,
                 width: 64,
               ),
@@ -52,16 +52,17 @@ class TemperatureDetailsWidget extends StatelessWidget {
                   Text(
                     title,
                     style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue.shade800),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue.shade800,
+                    ),
                   ),
                   const SizedBox(height: 10),
                   Text(
                     description,
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.blue.shade700,
+                      color: Colors.blue.shade800,
                     ),
                   ),
                 ],

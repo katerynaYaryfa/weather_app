@@ -8,7 +8,7 @@ class CurrentWeatherPageSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 100),
+        const SizedBox(height: 177),
         SkeletonAvatar(
           style: SkeletonAvatarStyle(
             width: 250,
@@ -35,12 +35,12 @@ class CurrentWeatherPageSkeleton extends StatelessWidget {
         const SizedBox(height: 41),
         SkeletonAvatar(
           style: SkeletonAvatarStyle(
-            width: 200,
-            height: 200,
-            borderRadius: BorderRadius.circular(100),
+            width: 300,
+            height: 300,
+            borderRadius: BorderRadius.circular(300),
           ),
         ),
-        const SizedBox(height: 41),
+        const SizedBox(height: 52),
         SkeletonAvatar(
           style: SkeletonAvatarStyle(
             width: 175,

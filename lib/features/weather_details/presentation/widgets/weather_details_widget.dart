@@ -6,12 +6,12 @@ class WeatherDetailsWidget extends StatelessWidget {
     super.key,
     required this.title,
     required this.value,
-    required this.iconText,
+    required this.icon,
   });
 
   final String title;
   final String value;
-  final String iconText;
+  final String icon;
 
   @override
   Widget build(BuildContext context) {
@@ -30,15 +30,15 @@ class WeatherDetailsWidget extends StatelessWidget {
               ),
             ],
             borderRadius: BorderRadius.circular(16.0),
-            color: Colors.blue.shade100,
+            color: Colors.blue.shade100.withOpacity(0.6),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 16),
               SvgPicture.asset(
-                iconText,
-                color: Colors.blue.shade400,
+                icon,
+                color: Colors.blue.shade600,
                 height: 48,
                 width: 48,
               ),
@@ -53,7 +53,7 @@ class WeatherDetailsWidget extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 value,
-                style: TextStyle(fontSize: 16, color: Colors.blue.shade700),
+                style: TextStyle(fontSize: 16, color: Colors.blue.shade800),
               ),
             ],
           ),
