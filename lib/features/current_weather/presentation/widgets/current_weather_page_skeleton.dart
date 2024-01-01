@@ -8,7 +8,7 @@ class CurrentWeatherPageSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 177),
+        const SizedBox(height: 144),
         SkeletonAvatar(
           style: SkeletonAvatarStyle(
             width: 250,

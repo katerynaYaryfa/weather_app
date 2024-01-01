@@ -29,25 +29,31 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
     final child = state.cityName.isEmpty
         ? const CurrentWeatherPageSkeleton()
         : BackgroundImageContainer(
-            child: Column(
+            child: ListView(
+              padding: EdgeInsets.zero,
               children: [
                 const _HeaderIcons(),
-                const SizedBox(height: 80),
-                Text(
-                  state.cityName ?? '',
-                  style: TextStyles.s30CWhite,
-                ),
-                Text(
-                  '${state.temperature}°',
-                  style: TextStyles.s50WBoldCWhite,
-                ),
-                Text(
-                  '${state.weatherDescription} ${state.weatherIcon}',
-                  style: TextStyles.s16CWhite,
-                ),
+                const SizedBox(height: 45),
+                Center(
+                    child: Column(
+                  children: [
+                    Text(
+                      state.cityName,
+                      style: TextStyles.s30CWhite,
+                    ),
+                    Text(
+                      '${state.temperature}°',
+                      style: TextStyles.s50WBoldCWhite,
+                    ),
+                    Text(
+                      '${state.weatherDescription} ${state.weatherIcon}',
+                      style: TextStyles.s16CWhite,
+                    ),
+                  ],
+                )),
                 Padding(
                   padding: const EdgeInsets.all(32.0),
-                  child: Image.asset('${state.mainImage}'),
+                  child: Image.asset(state.mainImage),
                 ),
                 TextButton(
                   onPressed: () {

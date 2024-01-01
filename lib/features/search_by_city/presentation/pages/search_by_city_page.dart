@@ -50,9 +50,9 @@ class SearchByCityPage extends StatelessWidget {
                         },
                       );
                 },
-                child: Text(
+                child: const Text(
                   'Get weather',
-                  style: TextStyle(fontSize: 18, color: Colors.blue.shade50),
+                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
             ),
