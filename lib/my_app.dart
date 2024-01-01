@@ -4,6 +4,7 @@ import 'package:weather_app/common/styles/skeleton_theme_provider.dart';
 import 'package:weather_app/features/current_weather/presentation/pages/current_weather_page.dart';
 import 'package:weather_app/features/current_weather/provider/current_weather_provider.dart';
 import 'package:weather_app/features/current_weather/repositories/current_weather_repository.dart';
+import 'package:weather_app/keys.dart';
 import 'package:weather_app/network_service.dart';
 
 class MyApp extends StatelessWidget {
@@ -21,10 +22,11 @@ class MyApp extends StatelessWidget {
               CurrentWeatherProvider(repository: currentWeatherRepository),
         ),
       ],
-      child: const SkeletonThemeProvider(
+      child: SkeletonThemeProvider(
         child: MaterialApp(
+          scaffoldMessengerKey: Keys.scaffoldMessengerKey,
           debugShowCheckedModeBanner: false,
-          home: CurrentWeatherPage(),
+          home: const CurrentWeatherPage(),
         ),
       ),
     );

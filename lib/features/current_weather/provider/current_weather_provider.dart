@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart';
 import 'package:weather_app/core/extensions/string_extensions.dart';
 import 'package:weather_app/features/current_weather/repositories/current_weather_repository.dart';
+import 'package:weather_app/keys.dart';
 import 'package:weather_app/weather_model.dart';
 
 class CurrentWeatherProvider extends ChangeNotifier {
@@ -35,7 +37,8 @@ class CurrentWeatherProvider extends ChangeNotifier {
     try {
       await Geolocator.requestPermission();
       Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.low);
+        desiredAccuracy: LocationAccuracy.low,
+      );
 
       latitude = position.latitude;
       longitude = position.longitude;
@@ -44,7 +47,21 @@ class CurrentWeatherProvider extends ChangeNotifier {
 
       updateUI(response);
     } catch (error) {
-      print(error);
+      if (error is ClientException) {
+        Keys.scaffoldMessengerKey.currentState!.showSnackBar(
+          const SnackBar(
+            content: Text('No Internet Connection'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else {
+        Keys.scaffoldMessengerKey.currentState!.showSnackBar(
+          SnackBar(
+            content: Text(error.toString()),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
 
     notifyListeners();

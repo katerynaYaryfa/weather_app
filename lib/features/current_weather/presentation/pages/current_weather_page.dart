@@ -23,6 +23,7 @@ class _CurrentWeatherPageState extends State<CurrentWeatherPage> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<CurrentWeatherProvider>();
+
     final child = provider.cityName == null
         ? const CurrentWeatherPageSkeleton()
         : Column(
